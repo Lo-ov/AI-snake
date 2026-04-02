@@ -1,0 +1,38 @@
+---
+description: Persist scripts/snippets used during tasks under root code folder
+alwaysApply: true
+---
+
+# Code Artifacts Rule
+
+## When Code Must Be Saved
+
+- If a task execution involves running ad-hoc scripts/snippets (PowerShell, Python, etc.), save the code used to the project root `code/` folder.
+- This applies to both:
+  - Scripts used to perform the work (generation, batch edits, fixes)
+  - Scripts used for operational tasks (logging/backfill, verification helpers)
+
+## Folder Structure
+
+- Create a subfolder per task run, for example:
+  - `code/task1-diary-<date>/`
+  - `code/task2-logging-<date>/`
+- Keep each subfolder focused on one task/run.
+
+## File Naming
+
+- Use descriptive names and avoid collisions (append date/time or a random suffix if needed).
+- Use appropriate extensions, e.g. `.py`, `.ps1`, `.md`.
+
+## Content Requirements
+
+- Scripts should be runnable as-is when reasonable (explicit root paths and inputs).
+- If a script was evolved during debugging, store the final working version at minimum.
+
+## Requirement Changes
+
+- If requirements change during execution, update the corresponding saved code artifacts under `code/` accordingly:
+  - Update scripts to match the new plan/behavior
+  - Keep the final working version in the task folder
+  - If a previous script is no longer valid due to requirement change, either replace it or add a new clearly named variant (e.g. `*_v2.py`)
+

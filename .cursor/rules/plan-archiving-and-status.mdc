@@ -1,0 +1,33 @@
+---
+description: Keep plan/plan.md archived and continuously updated with completion status
+alwaysApply: true
+---
+
+# Plan Archiving & Status Tracking Rule
+
+## Plan Location (Archive)
+
+- Every execution must have a plan document archived at: `plan/plan.md` under the project root.
+- If `plan/` does not exist, create it.
+
+## Update Behavior (Real-time)
+
+- When the plan is created or updated, **update the same `plan/plan.md` file** (do not create a new plan file per update unless user explicitly requests versioning).
+- Keep `plan/plan.md` in sync during execution:
+  - Mark items as **completed** as soon as they are done.
+  - Keep remaining items clearly marked as **pending / not completed**.
+  - If the approach changes, update the plan immediately to reflect the new steps and current progress.
+
+## Requirement Changes
+
+- If the user changes requirements (scope, acceptance criteria, deliverables), update `plan/plan.md` immediately:
+  - Adjust goals/scope
+  - Add/remove/rename steps
+  - Update completion status to reflect the new plan
+
+## Minimum Content Requirements
+
+- Clear goal(s) / scope
+- Step list with explicit status (completed vs pending)
+- Notes on what was verified (if verification is part of the task)
+

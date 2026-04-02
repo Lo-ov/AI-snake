@@ -1,0 +1,28 @@
+---
+description: Enforce per-task execution logs in root log folder
+alwaysApply: true
+---
+
+# Execution Logging Rule
+
+## Logging Requirement
+
+- For every task execution, write process logs to the project root `log` folder.
+- If `log` does not exist, create it before writing logs.
+
+## Log File Naming
+
+- Use a unique file name to avoid collisions.
+- Recommended naming: `task-<yyyyMMdd-HHmmss>-<random>.md`.
+
+## Log Content Minimum
+
+- Task source (for example `query.txt` or user request summary)
+- Root directory used for execution
+- Step-by-step actions performed
+- Final results and verification notes
+
+## Replay Requirement
+
+- If user requests replay/backfill for a finished task, create a补录 log file in `log` using the same unique naming rule.
+- Clearly mark it as replay/backfill and summarize reconstructed steps faithfully.

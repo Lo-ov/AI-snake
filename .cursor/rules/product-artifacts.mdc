@@ -1,0 +1,32 @@
+---
+description: Archive final deliverables under root product folder with usage instructions
+alwaysApply: true
+---
+
+# Product Artifacts Rule
+
+## Where to Put Final Deliverables
+
+- All final deliverables of a task must be organized under the project root `product/` folder.
+- Use a subfolder per deliverable/product, e.g. `product/<product-name>/`.
+
+## Usage Instructions Required
+
+- Each product subfolder must include an operation/usage manual:
+  - Recommended: `USAGE.md` (or `README.md`)
+- The usage manual must include:
+  - How to run / open / install
+  - How to operate (key bindings / UI steps)
+  - Basic rules/constraints (if applicable)
+
+## When Execution Completes
+
+- When the task is completed, update `product/<product-name>/` to reflect the final result:
+  - Ensure the runnable artifacts are up-to-date
+  - Update the usage manual to match the final behavior and controls
+
+## Relationship to Other Folders
+
+- `code/` stores scripts/snippets used during execution.
+- `product/` stores the final runnable result and its usage instructions.
+

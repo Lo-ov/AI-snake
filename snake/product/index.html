@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebGL Snake</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: #0b1020;
+        color: #e7eaf3;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+          Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      }
+      .wrap {
+        height: 100%;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+      }
+      header,
+      footer {
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      footer {
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        opacity: 0.9;
+        font-size: 12px;
+      }
+      .title {
+        font-weight: 700;
+        letter-spacing: 0.4px;
+      }
+      .hud {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        font-variant-numeric: tabular-nums;
+      }
+      .pill {
+        padding: 6px 10px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+      main {
+        position: relative;
+        display: grid;
+        place-items: center;
+        padding: 14px;
+      }
+      canvas {
+        width: min(960px, calc(100vw - 28px));
+        height: min(640px, calc(100vh - 160px));
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: radial-gradient(1200px 700px at 30% 20%, rgba(55, 105, 255, 0.20), transparent 55%),
+          radial-gradient(900px 500px at 70% 80%, rgba(60, 220, 150, 0.12), transparent 55%),
+          #070b16;
+      }
+      .overlay {
+        position: absolute;
+        inset: 14px;
+        display: grid;
+        place-items: center;
+        pointer-events: none;
+      }
+      .card {
+        width: min(720px, calc(100vw - 56px));
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(10, 14, 28, 0.78);
+        backdrop-filter: blur(8px);
+        padding: 16px 18px;
+        box-shadow: 0 18px 60px rgba(0, 0, 0, 0.4);
+      }
+      .card h2 {
+        margin: 0 0 8px;
+        font-size: 18px;
+      }
+      .card p {
+        margin: 6px 0;
+        line-height: 1.5;
+        opacity: 0.92;
+      }
+      .kbd {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.06);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
+        font-size: 12px;
+      }
+      .hidden {
+        display: none;
+      }
+      a {
+        color: #a8c7ff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="title">WebGL Snake</div>
+        <div class="hud">
+          <div class="pill">Score: <span id="score">0</span></div>
+          <div class="pill">Best: <span id="best">0</span></div>
+          <div class="pill">Speed: <span id="speed">1.0x</span></div>
+        </div>
+      </header>
+      <main>
+        <canvas id="c" aria-label="Snake game canvas"></canvas>
+        <div class="overlay">
+          <div id="overlay" class="card">
+            <h2 id="overlayTitle">准备开始</h2>
+            <p>
+              按 <span class="kbd">Space</span> 开始/暂停，
+              <span class="kbd">R</span> 重开。
+            </p>
+            <p>
+              移动：方向键 / <span class="kbd">W</span
+              ><span class="kbd">A</span><span class="kbd">S</span
+              ><span class="kbd">D</span>
+            </p>
+            <p id="overlayHint" style="margin-top: 10px; opacity: 0.85">
+              目标：吃到食物增长，撞墙或撞到自己则结束。
+            </p>
+          </div>
+        </div>
+      </main>
+      <footer>
+        <div>
+          本地打开即可试玩。若浏览器限制本地模块，可用静态服务器打开。
+        </div>
+        <div>
+          操作手册见 <a href="./README.md">README.md</a>
+        </div>
+      </footer>
+    </div>
+
+    <script src="./src/main.js"></script>
+  </body>
+</html>
+
