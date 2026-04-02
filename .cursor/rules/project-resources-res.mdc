@@ -1,0 +1,18 @@
+---
+description: >-
+  Ingest remote URLs and local file paths into project root res/ with organized
+  subfolders and filenames. Aligns with skill project-resources-ingest; use
+  when downloading assets, vendoring web resources, or copying external files
+  into the repository.
+alwaysApply: true
+---
+
+# Project `res/` ingestion
+
+When the user asks to download web resources into the project, mirror URL assets locally, or copy files from arbitrary local paths into the workspace:
+
+- Store deliverables under **`res/`** at the project root (`res/<subfolder>/<file>`).
+- The agent chooses subfolders and filenames for clarity; avoid silent overwrites.
+- Follow the Agent Skill **`project-resources-ingest`** in `.cursor/skills/project-resources-ingest/SKILL.md` for the full workflow.
+
+This rule complements **`execution-logging`**, **`plan-archiving-and-status`**, **`code-artifacts`**, and **`product-artifacts`** when the ingest is part of a traced plan, scripts, or shipped product.
