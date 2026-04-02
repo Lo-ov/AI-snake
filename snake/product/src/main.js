@@ -64,6 +64,64 @@
 
   const vbo = gl.createBuffer();
 
+  // ---------- Textured program (for bomb penalty point) ----------
+  const VS_TEX = `
+  attribute vec2 a_pos;
+  attribute vec2 a_uv;
+  varying vec2 v_uv;
+  void main() {
+    v_uv = a_uv;
+    gl_Position = vec4(a_pos, 0.0, 1.0);
+  }`;
+
+  const FS_TEX = `
+  precision mediump float;
+  varying vec2 v_uv;
+  uniform sampler2D u_tex;
+  void main() {
+    gl_FragColor = texture2D(u_tex, v_uv);
+  }`;
+
+  const texProgram = createProgram(VS_TEX, FS_TEX);
+  const aPosTex = gl.getAttribLocation(texProgram, "a_pos");
+  const aUv = gl.getAttribLocation(texProgram, "a_uv");
+  const uTex = gl.getUniformLocation(texProgram, "u_tex");
+  const texVbo = gl.createBuffer();
+
+  // Load bomb texture from local file (placed next to index.html).
+  // Use a 1x1 white fallback so the game never crashes before image load.
+  let bombTexReady = false;
+  const bombTexture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, bombTexture);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texImage2D(
+    gl.TEXTURE_2D,
+    0,
+    gl.RGBA,
+    1,
+    1,
+    0,
+    gl.RGBA,
+    gl.UNSIGNED_BYTE,
+    new Uint8Array([255, 255, 255, 255])
+  );
+
+  const bombImg = new Image();
+  bombImg.crossOrigin = "anonymous";
+  bombImg.onload = () => {
+    gl.bindTexture(gl.TEXTURE_2D, bombTexture);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bombImg);
+    bombTexReady = true;
+  };
+  bombImg.onerror = () => {
+    bombTexReady = false;
+  };
+  bombImg.src = "./bomb.png";
+
   function resizeCanvas() {
     const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
     const w = Math.floor(canvas.clientWidth * dpr);
@@ -104,6 +162,8 @@
   /** @type {{x:number,y:number}} */
   let food = { x: 0, y: 0 };
   /** @type {{x:number,y:number}} */
+  let penalty = { x: -1, y: -1 };
+  /** @type {{x:number,y:number}} */
   let dir = { x: 1, y: 0 };
   /** @type {{x:number,y:number}[]} */
   let dirQueue = [];
@@ -137,8 +197,13 @@
     gameOver = false;
     running = false;
     spawnFood();
+    spawnPenalty();
     updateHud();
-    setOverlay(true, "准备开始", "按 Space 开始/暂停，R 重开。");
+    setOverlay(
+      true,
+      "准备开始",
+      "按 Space 开始/暂停，R 重开。避开炸弹惩罚点。"
+    );
   }
 
   function randInt(n) {
@@ -156,6 +221,20 @@
       const y = randInt(GRID_H);
       if (!occupied.has(cellKey(x, y))) {
         food = { x, y };
+        return;
+      }
+    }
+  }
+
+  function spawnPenalty() {
+    // Penalty point is always one-at-a-time and never shares a cell with snake or food.
+    const occupied = new Set(snake.map((p) => cellKey(p.x, p.y)));
+    occupied.add(cellKey(food.x, food.y));
+    while (true) {
+      const x = randInt(GRID_W);
+      const y = randInt(GRID_H);
+      if (!occupied.has(cellKey(x, y))) {
+        penalty = { x, y };
         return;
       }
     }
@@ -216,9 +295,15 @@
     const tail = snake[snake.length - 1];
     const tailKey = cellKey(tail.x, tail.y);
     const willEat = nx === food.x && ny === food.y;
+    const hitsPenalty = nx === penalty.x && ny === penalty.y;
     const hitsSelf =
       bodyKeys.has(nextKey) && !(nextKey === tailKey && !willEat);
     if (hitsSelf) {
+      endGame();
+      return;
+    }
+
+    if (hitsPenalty) {
       endGame();
       return;
     }
@@ -229,6 +314,7 @@
       // mild speed-up
       tickMs = Math.max(70, Math.floor(tickMs * 0.975));
       spawnFood();
+      spawnPenalty();
       updateHud();
     } else {
       snake.pop();
@@ -310,6 +396,83 @@
     );
   }
 
+  /**
+   * Push a textured axis-aligned rectangle (in pixels) into vertex array.
+   * Layout per-vertex: x, y, u, v
+   */
+  function pushTexRect(verts, x, y, w, h) {
+    const x0 = x;
+    const y0 = y;
+    const x1 = x + w;
+    const y1 = y + h;
+
+    const p00 = pxToClip(x0, y0);
+    const p10 = pxToClip(x1, y0);
+    const p01 = pxToClip(x0, y1);
+    const p11 = pxToClip(x1, y1);
+
+    // two triangles: (00,10,01) and (10,11,01)
+    verts.push(
+      p00[0],
+      p00[1],
+      0,
+      0,
+      p10[0],
+      p10[1],
+      1,
+      0,
+      p01[0],
+      p01[1],
+      0,
+      1,
+      p10[0],
+      p10[1],
+      1,
+      0,
+      p11[0],
+      p11[1],
+      1,
+      1,
+      p01[0],
+      p01[1],
+      0,
+      1
+    );
+  }
+
+  function drawPenalty(bx, by, cell, inset) {
+    if (penalty.x < 0 || penalty.y < 0) return;
+
+    // If texture isn't ready yet, still draw with the 1x1 white fallback.
+    const x = bx + penalty.x * cell + inset;
+    const y = by + penalty.y * cell + inset;
+    const w = cell - inset * 2;
+    const h = cell - inset * 2;
+
+    const verts = [];
+    pushTexRect(verts, x, y, w, h);
+
+    gl.useProgram(texProgram);
+    gl.bindBuffer(gl.ARRAY_BUFFER, texVbo);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.DYNAMIC_DRAW);
+
+    const stride = 4 * 4;
+    gl.enableVertexAttribArray(aPosTex);
+    gl.vertexAttribPointer(aPosTex, 2, gl.FLOAT, false, stride, 0);
+    gl.enableVertexAttribArray(aUv);
+    gl.vertexAttribPointer(aUv, 2, gl.FLOAT, false, stride, 2 * 4);
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, bombTexture);
+    gl.uniform1i(uTex, 0);
+
+    // Enable alpha blending so PNG transparency works correctly.
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.drawArrays(gl.TRIANGLES, 0, verts.length / 4);
+    gl.disable(gl.BLEND);
+  }
+
   function render() {
     resizeCanvas();
     const { bx, by, bw, bh, cell } = getBoardRect();
@@ -360,6 +523,10 @@
       COLORS.food
     );
 
+    // penalty (bomb)
+    // Draw after the colored pass so it can use a different shader.
+    // It will be placed below snake rectangles because snake is drawn right after.
+
     // snake
     for (let i = snake.length - 1; i >= 0; i--) {
       const p = snake[i];
@@ -386,6 +553,8 @@
     gl.vertexAttribPointer(aCol, 3, gl.FLOAT, false, stride, 2 * 4);
 
     gl.drawArrays(gl.TRIANGLES, 0, verts.length / 5);
+
+    drawPenalty(bx, by, cell, inset);
   }
 
   // ---------- Loop ----------
