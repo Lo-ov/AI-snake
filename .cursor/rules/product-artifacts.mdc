@@ -5,9 +5,15 @@ alwaysApply: true
 
 # Product Artifacts Rule
 
+## Root Definition (Task Root)
+
+- **Task root** = the root directory explicitly stated in the requirement (e.g. “以 `snake` 文件夹为根目录”).
+- If the requirement does not specify a root, default to the workspace root.
+- All paths in this rule are **relative to the task root**.
+
 ## Where to Put Final Deliverables
 
-- All final deliverables of a task must be organized under the project root `product/` folder.
+- All final deliverables of a task must be organized under the task root `product/` folder.
 - Use a subfolder per deliverable/product, e.g. `product/<product-name>/`.
 
 ## Usage Instructions Required

@@ -11,7 +11,8 @@ alwaysApply: true
 
 When the user asks to download web resources into the project, mirror URL assets locally, or copy files from arbitrary local paths into the workspace:
 
-- Store deliverables under **`res/`** at the project root (`res/<subfolder>/<file>`).
+- Treat the **task root** as the project root for this workflow (the root directory explicitly stated in the requirement, e.g. “以 `snake` 文件夹为根目录”).
+- Store deliverables under **`res/`** at the task root (`res/<subfolder>/<file>`).
 - The agent chooses subfolders and filenames for clarity; avoid silent overwrites.
 - Follow the Agent Skill **`project-resources-ingest`** in `.cursor/skills/project-resources-ingest/SKILL.md` for the full workflow.
 

@@ -5,9 +5,15 @@ alwaysApply: true
 
 # Plan Archiving & Status Tracking Rule
 
+## Root Definition (Task Root)
+
+- **Task root** = the root directory explicitly stated in the requirement (e.g. “以 `snake` 文件夹为根目录”).
+- If the requirement does not specify a root, default to the workspace root.
+- All paths in this rule are **relative to the task root**.
+
 ## Plan Location (Archive)
 
-- Every execution must have a plan document archived at: `plan/plan.md` under the project root.
+- Every execution must have a plan document archived at: `plan/plan.md` under the task root.
 - If `plan/` does not exist, create it.
 
 ## Update Behavior (Real-time)

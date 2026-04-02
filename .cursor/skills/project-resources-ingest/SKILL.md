@@ -12,7 +12,7 @@ description: >-
 
 ## Goal
 
-Place **every** ingested asset under **`res/`** at the **project root** (workspace root unless the user names another root). The agent chooses **`res/<subfolder>/`** and **filenames** for clarity, stability, and low collision risk.
+Place **every** ingested asset under **`res/`** at the **task root** (the root directory explicitly stated in the requirement; if none is stated, default to workspace root). The agent chooses **`res/<subfolder>/`** and **filenames** for clarity, stability, and low collision risk.
 
 ## Layout conventions
 

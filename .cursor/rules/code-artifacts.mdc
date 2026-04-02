@@ -5,9 +5,15 @@ alwaysApply: true
 
 # Code Artifacts Rule
 
+## Root Definition (Task Root)
+
+- **Task root** = the root directory explicitly stated in the requirement (e.g. “以 `snake` 文件夹为根目录”).
+- If the requirement does not specify a root, default to the workspace root.
+- All paths in this rule are **relative to the task root**.
+
 ## When Code Must Be Saved
 
-- If a task execution involves running ad-hoc scripts/snippets (PowerShell, Python, etc.), save the code used to the project root `code/` folder.
+- If a task execution involves running ad-hoc scripts/snippets (PowerShell, Python, etc.), save the code used to the task root `code/` folder.
 - This applies to both:
   - Scripts used to perform the work (generation, batch edits, fixes)
   - Scripts used for operational tasks (logging/backfill, verification helpers)
