@@ -1,5 +1,8 @@
 ---
-description: Enforce per-task execution logs in root log folder
+description: >-
+  Enforce detailed execution logs under task-root log/ at conversation-style
+  report depth (context, reasoning, paths, steps, outcomes). Use whenever a
+  task runs and a process log should be written.
 alwaysApply: true
 ---
 
@@ -21,12 +24,45 @@ alwaysApply: true
 - Use a unique file name to avoid collisions.
 - Recommended naming: `task-<yyyyMMdd-HHmmss>-<random>.md`.
 
-## Log Content Minimum
+## Log Content Depth (Conversation / Message Report Granularity)
 
-- Task source (for example `query.txt` or user request summary)
-- Root directory used for execution
-- Step-by-step actions performed
-- Final results and verification notes
+Each log must read like a **short execution report** you would paste in chat: enough for someone else to **reconstruct what happened and why**, not only a tick list.
+
+Include **all** of the following sections (use headings or bullets as needed):
+
+1. **Context**
+   - What the user asked for (quote or paraphrase the requirement).
+   - **Task root** used for this run and how it was determined (e.g. explicit “以 X 为根目录” vs workspace default).
+   - Relevant constraints (e.g. “只改首行”“不要动正文”“必须 WebGL”).
+
+2. **Interpretation & decisions**
+   - How ambiguous points were resolved and **why** (e.g. why paths landed under task root vs workspace root).
+  - Any rule conflicts, unclear instructions, unexpected repository state, or other exceptions, including how they were handled.
+   - Trade-offs or alternatives considered when relevant.
+
+3. **Actions taken (narrative + concrete paths)**
+   - Ordered steps: what was read, created, edited, copied, downloaded, or run.
+   - **Full paths** (or repo-relative paths from task root) for important files and folders: `plan/plan.md`, `code/…`, `product/…`, `res/…`, scripts, configs.
+   - Commands or tools used at a high level (e.g. “PowerShell copy”, “pip install”, “node --check”) without dumping noise.
+
+4. **Results**
+   - What was delivered and **where** it lives.
+   - Links between artifacts (e.g. product bundle ↔ source under `snake/product`).
+
+5. **Verification**
+   - What was checked (automated or manual), pass/fail or “pending user”.
+   - If not fully verifiable in-environment, state that explicitly and list what the user should confirm.
+
+6. **Follow-ups / risks** (if any)
+   - Open items, known limitations, or suggested next checks.
+
+### Minimum checklist (still required)
+
+- Task source (e.g. `RD1.txt`, `query.txt`, or chat request)
+- Task root directory used for execution
+- Ambiguities / conflicts / exception decisions when they occurred
+- Step-by-step narrative with **paths** for material changes
+- Final outcomes and verification notes
 
 ## Replay Requirement
 

@@ -1,0 +1,40 @@
+---
+description: Require task-root test reports and explicit validation before completion
+alwaysApply: true
+---
+
+# Test Artifacts & Validation
+
+## Root Definition (Task Root)
+
+- **Task root** = the root directory explicitly stated in the requirement (e.g. “以 `snake` 文件夹为根目录”).
+- If the requirement does not specify a root, default to the workspace root.
+- All paths in this rule are **relative to the task root**.
+
+## Validation requirement
+
+- Every task that changes behavior, generated content, rules, code, or user-facing output must run validation appropriate to the scope.
+- Prefer existing automated checks in the touched area first: lint, type-check, build, unit tests, integration tests, snapshot tests, or other existing project commands.
+- If no automated checks exist or they are not suitable, perform focused manual verification and state the limitation explicitly.
+
+## Test output location
+
+- Write validation artifacts to task-root `test/`.
+- If `test/` does not exist, create it.
+- Use a unique report name such as `test-<yyyyMMdd-HHmmss>-<slug>.md`.
+
+## Minimum report content
+
+Each report must include:
+
+1. **Context**: what was changed, task root, and what needed validation.
+2. **Checks performed**: commands run and/or manual test steps.
+3. **Results**: pass/fail, important observations, and output locations if relevant.
+4. **Gaps / risks**: what could not be verified in-environment and what the user should confirm.
+
+## Coverage expectations
+
+- Behavior changes require test updates if tests already exist in the area.
+- Bug fixes should add regression coverage where practical.
+- Every substantive task should leave a task-root report under `test/`.
+- Do not claim completion without stating what was validated and what remains unverified.

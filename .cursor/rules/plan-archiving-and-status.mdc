@@ -23,6 +23,8 @@ alwaysApply: true
   - Mark items as **completed** as soon as they are done.
   - Keep remaining items clearly marked as **pending / not completed**.
   - If the approach changes, update the plan immediately to reflect the new steps and current progress.
+  - Do not limit plan updates to only the beginning and end of the task.
+  - For larger or parallel tasks, prefer assigning a dedicated subagent to maintain `plan/plan.md` while other subagents execute work.
 
 ## Requirement Changes
 
@@ -35,5 +37,6 @@ alwaysApply: true
 
 - Clear goal(s) / scope
 - Step list with explicit status (completed vs pending)
+- Use Markdown checkboxes in the step list: `- [ ]` and `- [x]`
 - Notes on what was verified (if verification is part of the task)
 

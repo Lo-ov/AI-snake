@@ -1,0 +1,64 @@
+---
+description: System-wide default workflow and execution policy
+alwaysApply: true
+---
+
+You are operating inside a repository that defines its own workflow under `.cursor/`.
+
+## Primary operating policy
+- Treat `.cursor/rules/` as the highest-priority repository instructions for task execution.
+- Treat `.cursor/skills/` as the repository's task playbooks for repeatable special workflows.
+- Read both before acting so planning, execution, validation, and delivery stay aligned with repository intent.
+
+## Mandatory execution flow
+For every user task, follow this flow in order:
+
+1. Read `.cursor/rules/00-system-workflow.mdc`.
+2. Scan other relevant files under `.cursor/rules/`.
+3. Scan `.cursor/skills/` and choose the matching skill flow, if any.
+4. Determine the **task root** from the user requirement; if none is specified, use the workspace root.
+5. Break down the task and create or update `plan/plan.md` under the task root.
+6. Keep `plan/plan.md` current with Markdown checkboxes `- [ ]` and `- [x]`; update it as steps finish or scope changes, not only at the start and end.
+7. Inspect relevant files and existing patterns before editing, then make the smallest correct change set.
+8. Execute the plan; when work is truly independent, parallelize it with multiple subagents. For larger or parallel tasks, prefer assigning one subagent to keep `plan/plan.md` synchronized in real time while other subagents perform execution work.
+9. Validate the result according to the testing rules and write code-check / product-test reports under task-root `test/`.
+10. During execution or before final delivery as appropriate, update the task-root artifacts required by the applicable rules: `log/`, `code/`, `res/`, `test/`, and `product/`.
+11. Deliver the result with validation status, key decisions, risks, and any remaining assumptions.
+
+## Execution principles
+Always:
+- prefer minimal, targeted changes
+- respect architecture boundaries
+- follow existing repository patterns before introducing new abstractions
+- avoid touching unrelated files
+- keep behavior changes explicit
+- update tests, logs, and docs when required by repository rules
+- keep the task plan synchronized throughout execution rather than batching plan updates only at task boundaries
+- record rule conflicts, unclear requirements, and exception handling in the task log instead of silently skipping them
+
+## Prohibited behavior
+Never:
+- ignore `.cursor/rules/` or `.cursor/skills/`
+- invent requirements not supported by user request or repository docs
+- introduce unnecessary dependencies
+- perform broad refactors during localized fixes
+- claim completion without validation
+- skip mentioning risks, assumptions, or incomplete validation
+
+## Skill selection policy
+Use `.cursor/skills/` as task-specific playbooks.
+
+Task mapping:
+- Downloading HTTP/HTTPS assets into the project, mirroring URLs locally, or copying external local files into task-root `res/` -> use `project-resources-ingest`
+- If no repository-local skill matches, continue under the applicable `.cursor/rules/` workflow and existing project patterns; do not invent a fake skill flow
+
+## Required delivery format
+- Final deliverables must be organized under task-root `product/` following `product-artifacts.mdc`
+- Use `product/<product-name>/` for each deliverable and include `USAGE.md` or `README.md`
+- The usage document must explain how to run / open / install the deliverable, how to operate it, and any key constraints
+- Do not declare the task complete until `product/` reflects the final result expected from the task scope
+
+## Ambiguity policy
+- If requirements, rules, repository state, or user intent are unclear, conflicting, incomplete, or unexpectedly force a trade-off, do not gloss over it
+- Use the safest narrow interpretation that does not violate explicit instructions; ask the user when the ambiguity changes scope or intent materially
+- Record the ambiguity, the decision taken, and any remaining risk in the task-root `log/` output according to `execution-logging.mdc`
